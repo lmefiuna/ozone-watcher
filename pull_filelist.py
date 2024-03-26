@@ -2,8 +2,9 @@ import requests
 from datetime import datetime as dt
 from bs4 import BeautifulSoup
 import pandas as pd
+from logger import logger
 
-URL = "https://ozonewatch.gsfc.nasa.gov/data/omi/Y2024/"
+URL = "https://ozonewatch.gsfc.nasa.gov/data/omi/Y2024"
 DATE_FORMAT = '%Y-%m-%d %H:%M'
 
 
@@ -18,11 +19,11 @@ def pull_filelist():
         if response.status_code == 200:
             html_content = response.text
         else:
-            print(
+            logger.error(
                 f"Failed to fetch webpage. Status code: {response.status_code}")
             # exit()
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching webpage: {e}")
+        logger.error(f"Error fetching webpage: {e}")
         # exit()
 
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -30,7 +31,7 @@ def pull_filelist():
     links = pre_tag.find_all('a')[5:]
 
     pulled_filelist_df = pd.DataFrame(
-        columns=["filename", "last_modified_timestamp"])
+        columns=["filename", "timestamp", "filesize_kib"])
     for link in links:
         href = link.get('href')
         text = link.get_text(strip=True)
@@ -38,14 +39,18 @@ def pull_filelist():
         # Find the next element which should contain the last modified time and filesize
         next_element = link.find_next_sibling(string=True)
         last_modified_time, filesize = next_element.strip().split("  ")
-        last_modified_timestamp = int(
+        timestamp = int(
             date_string_to_timestamp(last_modified_time))
+        filesize = int(filesize[:-1])
+
+        logger.info(
+            f"Found file {text} with timestamp {timestamp} and file size {filesize}K")
 
         pulled_filelist_df.loc[len(pulled_filelist_df.index)] = [
-            href, last_modified_timestamp]
-        # print(f"{i} Link: {href}, Text: {text}, LM Time: {last_modified_time}, LM Timestamp: {last_modified_timestamp}, Size: {filesize}")
+            href, timestamp, filesize]
+        # print(f"{i} Link: {href}, Text: {text}, LM Time: {last_modified_time}, LM Timestamp: {timestamp}, Size: {filesize}")
 
-    return pulled_filelist_df
+    return pulled_filelist_df.sort_values(by="filename")
 
 
 if __name__ == "__main__":
