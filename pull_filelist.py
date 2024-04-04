@@ -14,6 +14,7 @@ def date_string_to_timestamp(date: str):
 
 
 def pull_filelist():
+    logger.info("Pulling filelist")
     try:
         response = requests.get(URL)
         if response.status_code == 200:
@@ -21,10 +22,10 @@ def pull_filelist():
         else:
             logger.error(
                 f"Failed to fetch webpage. Status code: {response.status_code}")
-            # exit()
+            return None
     except requests.exceptions.RequestException as e:
         logger.error(f"Error fetching webpage: {e}")
-        # exit()
+        return None
 
     soup = BeautifulSoup(html_content, 'html.parser')
     pre_tag = soup.find('pre')
@@ -48,11 +49,11 @@ def pull_filelist():
 
         pulled_filelist_df.loc[len(pulled_filelist_df.index)] = [
             href, timestamp, filesize]
-        # print(f"{i} Link: {href}, Text: {text}, LM Time: {last_modified_time}, LM Timestamp: {timestamp}, Size: {filesize}")
 
     return pulled_filelist_df.sort_values(by="filename")
 
 
 if __name__ == "__main__":
     pulled_filelist_df = pull_filelist()
+    print(pulled_filelist_df)
     pulled_filelist_df.to_csv("pulled_filelist.csv", index=False)
