@@ -47,7 +47,7 @@ def pull_files(pulled_filelist_df: pd.DataFrame):
         if os.path.isfile(f"{DATA_FOLDER_PATH}/{filename}"):
             existing_timestamp = os.path.getmtime(
                 f"{DATA_FOLDER_PATH}/{filename}")
-            logger.info(f"File {filename} already exists")
+            logger.debug(f"File {filename} already exists")
 
             # TODO: compare filesizes
             if timestamp != existing_timestamp:
@@ -79,4 +79,3 @@ if __name__ == "__main__":
     downloaded_files = pull_files(pulled_filelist)
     print(pulled_filelist)
     print(downloaded_files)
-    # logger.info(f"Pulling files into {DATA_FOLDER_PATH}")

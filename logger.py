@@ -8,7 +8,7 @@ logger = logging.getLogger("ozonewatch")
 logger.setLevel(logging.DEBUG)
 
 file_handler = logging.FileHandler(LOG_FILENAME)
-file_handler.setLevel(logging.INFO)
+file_handler.setLevel(logging.DEBUG)
 
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.WARNING)
@@ -20,5 +20,3 @@ console_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
-# logging.basicConfig(filename=f'./{LOG_FILENAME}', level=logging.INFO)
-# print(f"Logging to {os.getcwd()}{LOG_FILENAME}")

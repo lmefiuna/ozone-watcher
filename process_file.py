@@ -28,7 +28,7 @@ def process_file(filepath: str):
 
     logger.info(f"Processing {filepath}")
     with open(filepath, "rt") as f:
-        logger.info("Getting reading date and time from header 1st line")
+        logger.debug("Getting reading date and time from header 1st line")
         header_line_1 = f.readline()
         pattern = r"\s+Day:\s+\d+ (\b[A-Za-z]+\s+\d{1,2}, \d{4}\b).*LECT: (\d{2}:\d{2} [ap]m)"
         match = re.search(pattern, header_line_1)
@@ -37,7 +37,7 @@ def process_file(filepath: str):
             date = match.group(1)
             time = match.group(2)
 
-            logger.info(f"Found date {date} and time {time}")
+            logger.debug(f"Found date {date} and time {time}")
         else:
             # print(
             #     f"No date and time match found in file {filepath}.\nHeader line value: {header_line_1}")
@@ -46,7 +46,7 @@ def process_file(filepath: str):
                 f"No date and time match found.\nHeader line value: {header_line_1}")
             print("No match found.")
 
-        logger.info("Skipping remaining header lines")
+        logger.debug("Skipping remaining header lines")
         for i in range(2):
             f.readline()
 
