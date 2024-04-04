@@ -5,10 +5,11 @@ import pandas as pd
 from pull_filelist import pull_filelist
 from pull_files import pull_files, DATA_FOLDER_PATH
 from process_file import process_file, DATE_FORMAT
+from mysql_connection import insert_row
 os.chdir(os.path.dirname(__file__))
 
 # True for downloading all files, including processed ones and attempting to load to database
-compute_all = True
+compute_all = False
 
 filelist_df = pull_filelist()
 downloaded_files_df = pull_files(filelist_df)
@@ -37,7 +38,7 @@ if compute_all:
 
         output_df.loc[len(output_df)] = [timestamp, 0, measurement]
 else:
-    logger.info("Processing only new files")
+    logger.debug("Processing only new files")
     for index, row in downloaded_files_df.iterrows():
         result = process_file(os.path.join(DATA_FOLDER_PATH, row["filename"]))
         
@@ -53,4 +54,6 @@ else:
 
         output_df.loc[len(output_df)] = [timestamp, 0, measurement]
 
-output_df.to_csv("./output_ozone_readings.csv", index=False)
+# output_df.to_csv("./output_ozone_readings.csv", index=False)
+for index, row in output_df.iterrows():
+    insert_row(row["timestamp"], row["OZONE"])
