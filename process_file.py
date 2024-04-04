@@ -61,7 +61,7 @@ def process_file(filepath: str):
             line = line.rstrip().replace("\n", "")[1:]
 
             if LATITUDE_IDENTIFIER in line:
-                logger.info("Last line of latitude data reached")
+                logger.debug("Last line of latitude data reached")
                 line = line.split(LATITUDE_IDENTIFIER)
                 latitude_data += line[0].rstrip()
                 latitude = float(line[1].strip())
